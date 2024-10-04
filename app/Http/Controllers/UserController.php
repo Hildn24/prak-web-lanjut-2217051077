@@ -8,9 +8,48 @@ use App\Models\UserModel;
 
 class UserController extends Controller
 {
+    public $userModel;
+    public $kelasModel;
+
+    public function __construct() {
+        $this->userModel = new UserModel();
+        $this->kelasModel = new Kelas();
+    }
+
+    public function profile($nama = '', $kelas = '', $npm = '')
+    {
+        $data = [
+            'nama' => $nama,
+            'kelas' => $kelas,
+            'npm' => $npm
+        ];
+
+        return view('profile', $data);
+    }
+
+    public function index()
+    {
+        $data = [
+            'title' => 'List User',
+            'users' => $this->userModel->getUser(),
+        ];
+
+        return view('list_user', $data);
+    }
+
     public function create()
     {
-        // Mengirim data kelas ke view create_user
+        $kelasModel = new Kelas();
+
+        $kelas = $kelasModel->getKelas();
+
+        $data = [
+            'title' => 'Create User',
+            'kelas' => $kelas,
+        ];
+
+        return view('create_user', $data);
+
         return view('create_user', [
             'kelas' => Kelas::all(),
         ]);
@@ -18,7 +57,14 @@ class UserController extends Controller
 
     public function store(Request $request)
     {
-        // Validasi data input menggunakan validate()
+        $this->userModel->create([
+            'nama' => $request->input('nama'),
+            'npm' => $request->input('npm'),
+            'kelas_id' => $request->input('kelas_id'),
+        ]);
+
+        return redirect()->to('/user');
+        
         $validatedData = $request->validate([
             'nama' => 'required|string|max:255',
             'npm' => 'required|string|max:255',
@@ -32,7 +78,7 @@ class UserController extends Controller
     
         // Simpan data user ke database
         $user = UserModel::create($validatedData);
-    
+
         // Muat relasi kelas untuk user
         $user->load('kelas');
     
