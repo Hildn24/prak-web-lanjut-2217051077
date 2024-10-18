@@ -67,7 +67,7 @@
 @section('content')
 <div class="container">
 <h1>Create User</h1>
-    <form action="/user/store" method="POST">
+<form action="{{ route('user.store') }}" method="post" enctype="multipart/form-data">
         @csrf
         <label for="nama">Nama:</label>
         <input type="text" id="nama" name="nama" required>
@@ -83,6 +83,9 @@
                 <option value="{{ $kelasItem->id }}">{{ $kelasItem->nama_kelas }}</option>
             @endforeach
         </select>
+
+        <input type="file" id="foto" name="foto"><br><br>
+        <label for="foto">foto:</label><br>
 
         <button type="submit">Submit</button>
     </form>

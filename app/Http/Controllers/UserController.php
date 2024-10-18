@@ -28,14 +28,13 @@ class UserController extends Controller
     }
 
     public function index()
-    {
-        $data = [
-            'title' => 'List User',
-            'users' => $this->userModel->getUser(),
-        ];
+{
+    // Ambil semua data user dengan relasi kelas
+    $users = UserModel::with('kelas')->get();
 
-        return view('list_user', $data);
-    }
+    // Kirim data ke view
+    return view('list_user', compact('users'));
+}
 
     public function create()
     {
@@ -57,13 +56,32 @@ class UserController extends Controller
 
     public function store(Request $request)
     {
-        $this->userModel->create([
-            'nama' => $request->input('nama'),
-            'npm' => $request->input('npm'),
-            'kelas_id' => $request->input('kelas_id'),
+        $request->validate([
+            'nama' => 'required|string|max:255',
+            'npm' => 'required|string|max:255',
+            'kelas_id' => 'required|integer',
+            'foto' =>'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048', //Validasi untuk foto
         ]);
 
-        return redirect()->to('/user');
+        if ($request->hasFile('foto')) {
+            $foto = $request->file('foto');
+            // Menyimpan file foto di folder 'uploads'
+            $fotoPath = $foto->move(('upload/img'), $foto);
+            } else {
+            // Jika tidak ada file yang diupload, set fotoPath menjadi null atau default
+            $fotoPath = null;
+            }
+
+            $this->userModel->create([
+                'nama' => $request->input('nama'),
+                'npm' => $request->input('npm'),
+                'kelas_id' => $request->input('kelas_id'),
+                'foto' => $fotoPath, // Menyimpan path foto
+                ]);
+                
+
+                return redirect()->to('/user')->with('success', 'User
+                berhasil ditambahkan');
         
         $validatedData = $request->validate([
             'nama' => 'required|string|max:255',
@@ -117,6 +135,17 @@ class UserController extends Controller
         ]);
     }
 
+    public function show($id){
+        $user = $this->userModel->getUser($id);
+
+        $data = [
+            'title' => 'Profile',
+            'user'  => $user,
+        ];
+
+        return view('profile', $data);
+    }
+
     public function showProfile($id)
     {
         // Ambil data user dari database
@@ -126,7 +155,7 @@ class UserController extends Controller
             'nama' => $user->nama,
             'npm' => $user->npm,
             'nama_kelas' => $user->kelas->nama_kelas ?? 'Kelas tidak ditemukan', // Ambil nama kelas dari relasi
-            'profile_picture' => session('profile_picture', 'public/assets/img/gladiia.png'), // Ambil profile picture dari session
+            'profile_picture' => session('profile_picture', 'public/assets/img/default.jpg'), // Ambil profile picture dari session
         ]);
     }
 }
