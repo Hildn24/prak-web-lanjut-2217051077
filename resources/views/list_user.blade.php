@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>User List</title>
+    <a href="{{ route('user.create') }}" class="btn btn-primary mb-3">Tambah Pengguna Baru</a>
     <style>
         body {
             font-family: 'Poppins', sans-serif;
@@ -126,6 +127,7 @@
                         <th>Nama</th>
                         <th>NPM</th>
                         <th>Kelas</th>
+                        <th>Foto</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -134,10 +136,16 @@
                         <td>{{ $user->id }}</td>
                         <td>{{ $user->nama }}</td>
                         <td>{{ $user->npm }}</td>
-                        <td>{{ $user->kelas->nama_kelas ?? 'Kelas tidak ditemukan' }}</td> 
+                        <td>{{ $user->kelas->nama_kelas ?? 'Kelas tidak ditemukan' }}</td>
                         <td>
-                        </td>
-                    </tr>
+                        @if($user->foto)
+                        <img src="{{ asset($user->foto ?? 'uploads/img/default.jpg') }}" alt="Foto Pengguna" width="100">
+                    @else
+                        <span>Foto tidak tersedia</span>
+                    @endif
+                        </td> 
+                        <td><a href="{{ route('users.show', $user->id) }}" class="btn btn-warning mb-3">Detail"></a></td>
+                    </tr>   
                     @endforeach
                 </tbody>
             </table>
