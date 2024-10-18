@@ -158,4 +158,40 @@ class UserController extends Controller
             'profile_picture' => session('profile_picture', 'public/assets/img/default.jpg'), // Ambil profile picture dari session
         ]);
     }
+
+    public function edit($id)
+    {
+        $user = UserModel::findOrFail($id);
+        $kelasModel = new Kelas();
+        $kelas = $kelasModel->getKelas();
+        $title = 'Edit User';
+        return view('edit_user', compact('user', 'kelas', 'title'));
+    }
+
+    public function update(Request $request, $id)
+    {
+    $user = UserModel::findOrFail($id);
+
+    $user->nama = $request->nama;
+    $user->npm = $request->npm;
+    $user->kelas_id = $request->kelas_id;
+
+    if ($request->hasFile('foto')) {
+        $fileName = time() . '.' . $request->foto->extension();
+        $request->foto->move(public_path('uploads'), $fileName);
+        $user->foto = 'uploads/' . $fileName;
+    }
+
+    $user->save();
+
+    return redirect()->route('user.list')->with('success', 'User updated successfully');
+    }
+
+    public function destroy($id)
+    {
+    $user = UserModel::findOrFail($id);
+    $user->delete();
+
+    return redirect()->to('/user/list')->with('success', 'User has been deleted successfully');
+    }
 }

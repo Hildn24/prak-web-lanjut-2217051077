@@ -1,7 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\UserController; // pastikan ada import ini
+use App\Http\Controllers\UserController; 
 
 /*
 |--------------------------------------------------------------------------
@@ -26,3 +26,8 @@ Route::post('/profile/upload', [ProfileController::class, 'uploadProfilePicture'
 Route::get('/user', [UserController::class, 'index'])->name('user.index');
 Route::get('/show/{id}', [UserController::class, 'show'])->name('users.show');
 Route::get('/users/{id}', [UserController::class, 'show'])->name('users.show');
+Route::put('/user/{id}', [UserController::class, 'update'])->name('user.update');
+Route::get('/user/{id}/edit', [UserController::class, 'edit'])->name('user.edit');
+Route::get('/users', [UserController::class, 'index'])->name('user.list');
+Route::delete('/user/{id}', [UserController::class, 'destroy'])->name('users.destroy');
+Route::get('/user/list', [UserController::class, 'index'])->name('user.list');
