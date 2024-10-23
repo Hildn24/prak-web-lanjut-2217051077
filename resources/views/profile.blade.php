@@ -76,6 +76,8 @@
             <span>Kelas:</span>
             <span>{{ $user->kelas->nama_kelas ?? 'Kelas tidak ditemukan' }}</span>
         </div>
+        <div class="info-item">Jurusan: {{ $user->jurusan ?? 'Jurusan tidak ditemukan' }}</div>
+        <div class="info-item">Semester: {{ $user->semester ?? 'Semester tidak ditemukan' }}</div>
     </div>
 </div>
 </body>

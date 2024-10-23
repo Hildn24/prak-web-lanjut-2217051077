@@ -60,7 +60,9 @@ class UserController extends Controller
             'nama' => 'required|string|max:255',
             'npm' => 'required|string|max:255',
             'kelas_id' => 'required|integer',
-            'foto' =>'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048', //Validasi untuk foto
+            'jurusan' => 'required|string|max:255', // Validasi jurusan
+            'semester' => 'required|integer|min:1|max:8', // Validasi semester
+            'foto' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ]);
 
         if ($request->hasFile('foto')) {
@@ -76,7 +78,9 @@ class UserController extends Controller
                 'nama' => $request->input('nama'),
                 'npm' => $request->input('npm'),
                 'kelas_id' => $request->input('kelas_id'),
-                'foto' => $fotoPath, // Menyimpan path foto
+                'jurusan' => $request->input('jurusan'),
+                'semester' => $request->input('semester'),
+                'foto' => $fotoPath,
                 ]);
                 
 
@@ -109,29 +113,22 @@ class UserController extends Controller
     }
     public function uploadProfilePicture(Request $request)
     {
-        // Validasi file gambar
         $request->validate([
-            'profile_picture' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048', // Maksimal 2MB
+            'profile_picture' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048', 
         ]);
-
-        // Ambil file dari form
         $file = $request->file('profile_picture');
 
-        // Tentukan nama file yang unik untuk disimpan di public/assets/img
         $fileName = time().'_'.$file->getClientOriginalName();
 
-        // Pindahkan file ke folder public/assets/img
         $file->move(public_path('assets/img'), $fileName);
 
-        // Buat path file yang akan digunakan di view
         $profile_picture_path = 'assets/img/' . $fileName;
 
-        // Redirect ke halaman profil dengan path gambar yang baru dan data user
         return back()->with([
             'profile_picture' => $profile_picture_path,
             'nama' => $request->input('nama'),
             'npm' => $request->input('npm'),
-            'nama_kelas' => $request->input('kelas_id') // Sesuaikan dengan data yang sudah disimpan
+            'nama_kelas' => $request->input('kelas_id')
         ]);
     }
 

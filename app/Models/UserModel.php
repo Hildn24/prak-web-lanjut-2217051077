@@ -15,6 +15,8 @@ class UserModel extends Model
         'npm',
         'kelas_id',
         'foto',
+        'jurusan',
+        'semester',
     ];
 
     public function getUser($id = null) {

@@ -111,7 +111,6 @@
 
             <label for="kelas_id">Kelas:</label>
             <select id="kelas_id" name="kelas_id" required>
-                <!-- Menambahkan opsi default untuk tidak memilih kelas A -->
                 <option value="" disabled selected>Pilih Kelas</option>
                 @foreach($kelas as $kelasItem)
                 <option value="{{ $kelasItem->id }}">{{ $kelasItem->nama_kelas }}</option>
@@ -121,11 +120,16 @@
             <label for="foto" class="file-label">Upload Foto:</label>
             <input type="file" id="foto" name="foto"><br>
 
+            <label for="jurusan">Jurusan:</label>
+            <input type="text" id="jurusan" name="jurusan" required>
+
+            <label for="semester">Semester:</label>
+            <input type="text" id="semester" name="semester" required>
             <button type="submit">Submit</button>
         </form>
     </div>
     @endsection
 
 </body>
-
 </html>
+
