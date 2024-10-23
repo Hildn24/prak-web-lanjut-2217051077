@@ -14,15 +14,15 @@
             justify-content: center;
             height: 100vh;
             margin: 0;
-            background-color: #a7c957; /* Mengubah background halaman menjadi hijau */
+            background-color: #a7c957; 
         }
         .profile-container {
             text-align: center;
-            background-color: #f4d35e; /* Mengubah background menjadi kuning */
+            background-color: #f4d35e; 
             padding: 20px;
             border-radius: 10px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            width: 1000px; /* Mengubah lebar kotak kontainer */
+            width: 1000px;
         }
         .profile-info {
             width: 300px;
@@ -69,16 +69,15 @@
 <div class="profile-container">
     <h1>Profile User</h1>
     <div class="profile-info">
-        <!-- Tampilkan gambar profil dari public/assets/img -->
-        <img src="{{ asset('assets/img/gladiia.jpg') }}" alt="Profile Picture" class="profile-pic" width="150" height="150">
-        <!-- Info user -->
-        <div class="info-item">Nama: {{ $nama }}</div>
-        <div class="info-item">NPM: {{ $npm }}</div>
-        <!-- Info user dengan kelas inline -->
+        <img src="{{ asset($user->foto ?? 'assets/img/default-foto.jpg') }}" alt="Profile Picture" class="profile-pic" width="150" height="150">
+        <div class="info-item">Nama: {{ $user->nama }}</div>
+        <div class="info-item">NPM: {{ $user->npm }}</div>
         <div class="info-item-inline">
             <span>Kelas:</span>
-            <span>{{ $nama_kelas ?? 'Kelas tidak ditemukan' }}</span>
+            <span>{{ $user->kelas->nama_kelas ?? 'Kelas tidak ditemukan' }}</span>
         </div>
+        <div class="info-item">Jurusan: {{ $user->jurusan ?? 'Jurusan tidak ditemukan' }}</div>
+        <div class="info-item">Semester: {{ $user->semester ?? 'Semester tidak ditemukan' }}</div>
     </div>
 </div>
 </body>

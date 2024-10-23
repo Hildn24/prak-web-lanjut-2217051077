@@ -10,12 +10,20 @@ class UserModel extends Model
     use HasFactory;
     protected $table = 'user';
     protected $guarded = ['id'];
+    protected $fillable = [
+        'nama',
+        'npm',
+        'kelas_id',
+        'foto',
+        'jurusan',
+        'semester',
+    ];
 
-    public function getUser() {
+    public function getUser($id = null) {
         return $this->join('kelas', 'kelas.id', '=', 'user.kelas_id')
         ->select('user.*', 'kelas.nama_kelas as nama_kelas')
-        ->orderBy('user.id', 'asc')
-        ->get();
+        ->where('user.id', $id)
+        ->first();
 
     }
 

@@ -28,14 +28,13 @@ class UserController extends Controller
     }
 
     public function index()
-    {
-        $data = [
-            'title' => 'List User',
-            'users' => $this->userModel->getUser(),
-        ];
+{
+    // Ambil semua data user dengan relasi kelas
+    $users = UserModel::with('kelas')->get();
 
-        return view('list_user', $data);
-    }
+    // Kirim data ke view
+    return view('list_user', compact('users'));
+}
 
     public function create()
     {
@@ -57,13 +56,36 @@ class UserController extends Controller
 
     public function store(Request $request)
     {
-        $this->userModel->create([
-            'nama' => $request->input('nama'),
-            'npm' => $request->input('npm'),
-            'kelas_id' => $request->input('kelas_id'),
+        $request->validate([
+            'nama' => 'required|string|max:255',
+            'npm' => 'required|string|max:255',
+            'kelas_id' => 'required|integer',
+            'jurusan' => 'required|string|max:255', // Validasi jurusan
+            'semester' => 'required|integer|min:1|max:8', // Validasi semester
+            'foto' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ]);
 
-        return redirect()->to('/user');
+        if ($request->hasFile('foto')) {
+            $foto = $request->file('foto');
+            // Menyimpan file foto di folder 'uploads'
+            $fotoPath = $foto->move(('upload/img'), $foto);
+            } else {
+            // Jika tidak ada file yang diupload, set fotoPath menjadi null atau default
+            $fotoPath = null;
+            }
+
+            $this->userModel->create([
+                'nama' => $request->input('nama'),
+                'npm' => $request->input('npm'),
+                'kelas_id' => $request->input('kelas_id'),
+                'jurusan' => $request->input('jurusan'),
+                'semester' => $request->input('semester'),
+                'foto' => $fotoPath,
+                ]);
+                
+
+                return redirect()->to('/user')->with('success', 'User
+                berhasil ditambahkan');
         
         $validatedData = $request->validate([
             'nama' => 'required|string|max:255',
@@ -91,30 +113,34 @@ class UserController extends Controller
     }
     public function uploadProfilePicture(Request $request)
     {
-        // Validasi file gambar
         $request->validate([
-            'profile_picture' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048', // Maksimal 2MB
+            'profile_picture' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048', 
         ]);
-
-        // Ambil file dari form
         $file = $request->file('profile_picture');
 
-        // Tentukan nama file yang unik untuk disimpan di public/assets/img
         $fileName = time().'_'.$file->getClientOriginalName();
 
-        // Pindahkan file ke folder public/assets/img
         $file->move(public_path('assets/img'), $fileName);
 
-        // Buat path file yang akan digunakan di view
         $profile_picture_path = 'assets/img/' . $fileName;
 
-        // Redirect ke halaman profil dengan path gambar yang baru dan data user
         return back()->with([
             'profile_picture' => $profile_picture_path,
             'nama' => $request->input('nama'),
             'npm' => $request->input('npm'),
-            'nama_kelas' => $request->input('kelas_id') // Sesuaikan dengan data yang sudah disimpan
+            'nama_kelas' => $request->input('kelas_id')
         ]);
+    }
+
+    public function show($id){
+        $user = $this->userModel->getUser($id);
+
+        $data = [
+            'title' => 'Profile',
+            'user'  => $user,
+        ];
+
+        return view('profile', $data);
     }
 
     public function showProfile($id)
@@ -126,7 +152,43 @@ class UserController extends Controller
             'nama' => $user->nama,
             'npm' => $user->npm,
             'nama_kelas' => $user->kelas->nama_kelas ?? 'Kelas tidak ditemukan', // Ambil nama kelas dari relasi
-            'profile_picture' => session('profile_picture', 'public/assets/img/gladiia.png'), // Ambil profile picture dari session
+            'profile_picture' => session('profile_picture', 'public/assets/img/default.jpg'), // Ambil profile picture dari session
         ]);
+    }
+
+    public function edit($id)
+    {
+        $user = UserModel::findOrFail($id);
+        $kelasModel = new Kelas();
+        $kelas = $kelasModel->getKelas();
+        $title = 'Edit User';
+        return view('edit_user', compact('user', 'kelas', 'title'));
+    }
+
+    public function update(Request $request, $id)
+    {
+    $user = UserModel::findOrFail($id);
+
+    $user->nama = $request->nama;
+    $user->npm = $request->npm;
+    $user->kelas_id = $request->kelas_id;
+
+    if ($request->hasFile('foto')) {
+        $fileName = time() . '.' . $request->foto->extension();
+        $request->foto->move(public_path('uploads'), $fileName);
+        $user->foto = 'uploads/' . $fileName;
+    }
+
+    $user->save();
+
+    return redirect()->route('user.list')->with('success', 'User updated successfully');
+    }
+
+    public function destroy($id)
+    {
+    $user = UserModel::findOrFail($id);
+    $user->delete();
+
+    return redirect()->to('/user/list')->with('success', 'User has been deleted successfully');
     }
 }
