@@ -125,12 +125,11 @@
 
             <label for="semester">Semester:</label>
             <input type="text" id="semester" name="semester" required>
-
             <button type="submit">Submit</button>
         </form>
     </div>
     @endsection
 
 </body>
-
 </html>
+
